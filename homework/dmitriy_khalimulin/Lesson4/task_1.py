@@ -13,7 +13,7 @@ my_dict['dict'] = {
 my_dict['set'] = {2341234, 'test', 3636214, None, False}
 
 # Поиск последнего значения в 'tuple'
-search_last_value = my_dict['tuple'][-1]
+search_last_value = my_dict1['tuple'][-1]
 
 # Добавляем значение в список и удаляем второй элемент списка 'list'
 my_dict['list'].append("432236")
