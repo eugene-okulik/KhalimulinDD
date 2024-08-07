@@ -20,7 +20,7 @@ my_dict['list'].append("432236")
 my_dict['list'].pop(1)
 
 # Добавляем элемент с ключом ('i am a tuple',) и удаляем 'lastname'
-my_dict['dict'][(str('i am a tuple',))] = "Новое значение"
+my_dict['dict'][(str('i am a tuple',))] = "look"
 del my_dict['dict']['lastname']
 
 # Добавляем новый элемент в множество и удаляем элемент из множества
