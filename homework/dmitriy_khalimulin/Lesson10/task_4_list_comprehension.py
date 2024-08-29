@@ -8,10 +8,12 @@ PRICE_LIST = '''Ретрадь 50р
                 Пенал 300р
                 Рюкзак 500р'''
 
-price_dict = {}
+price_dict = dict(
+    line.split() for line in PRICE_LIST.splitlines()
+)  # Используем dict comprehension
 
-for line in PRICE_LIST.splitlines():
-    name, price = line.split()
-    price_dict[name] = int(price[:-1])  # Удаляем "р" с цены
+price_dict = {
+    name: int(price[:-1]) for name, price in price_dict.items()
+}  # Используем dict comprehension для преобразования цен
 
 print(price_dict)
