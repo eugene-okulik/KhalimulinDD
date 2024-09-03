@@ -47,21 +47,12 @@ class Bouquet:
         total_freshness = sum(flwr.freshness_days for flwr in self.flowers)
         return total_freshness / len(self.flowers)
 
-    def sort_by_freshness(self):
-        self.flowers.sort(key=lambda fl: fl.freshness_days, reverse=True)
-
-    def sort_by_color(self):
-        self.flowers.sort(key=lambda fl: fl.color)
-
-    def sort_by_stem_length(self):
-        self.flowers.sort(key=lambda fl: fl.stem_length, reverse=True)
-
-    def sort_by_price(self):
-        self.flowers.sort(key=lambda fl: fl.price, reverse=True)
+    def sort_by(self, key, reverse=False):
+        self.flowers.sort(key=lambda fl: getattr(fl, key), reverse=reverse)
 
     def search_by_freshness(self, min_freshness, max_freshness):
         return [flwr for flwr in self.flowers
-                if min_freshness <= flower.freshness_days <= max_freshness]
+                if min_freshness <= flwr.freshness_days <= max_freshness]
 
 
 # Создание цветов
@@ -87,7 +78,7 @@ print(f"Среднее время увядания: {my_bouquet.get_withering_ti
 
 # Сортировка и поиск
 print("\nСортировка по свежести:")
-my_bouquet.sort_by_freshness()
+my_bouquet.sort_by('freshness_days')
 for flower in my_bouquet.flowers:
     print(flower)
 
