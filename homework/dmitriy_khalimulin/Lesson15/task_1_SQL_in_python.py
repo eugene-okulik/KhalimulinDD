@@ -16,9 +16,9 @@ cursor = db.cursor()
 student_create = "INSERT INTO students (name, second_name) VALUES (%s, %s)"
 cursor.execute(student_create, ('Denis', 'Kurganov'))
 student_id = cursor.lastrowid
-cursor.execute(f'SELECT * FROM students WHERE id = {student_id}')
+cursor.execute(f"SELECT * FROM students WHERE id = {student_id}")
 student_data = cursor.fetchone()
-print(f'Создание студента:\n{student_data}\n')
+print(f"Создание студента:\n{student_data}\n")
 
 
 # Создание книг для студента
@@ -30,25 +30,25 @@ cursor.executemany(
         ('Pen and Pencil', student_id)
     ]
 )
-cursor.execute(f'SELECT * FROM books WHERE taken_by_student_id = {student_id}')
+cursor.execute(f"SELECT * FROM books WHERE taken_by_student_id = {student_id}")
 books_data = cursor.fetchall()
-print(f'Создание книг для студента:\n{books_data}\n')
+print(f"Создание книг для студента:\n{books_data}\n")
 
 
 # Создание группы
 groups_create = "INSERT INTO `groups` (title, start_date, end_date) VALUES (%s, %s, %s)"
 cursor.execute(groups_create, ('Super group', 'aug 2024', 'sep 2024'))
 groups_id = cursor.lastrowid
-cursor.execute(f'SELECT * FROM `groups` WHERE id = {groups_id}')
+cursor.execute(f"SELECT * FROM `groups` WHERE id = {groups_id}")
 groups_data = cursor.fetchone()
-print(f'Создание группы:\n{groups_data}\n')
+print(f"Создание группы:\n{groups_data}\n")
 
 
 # Определение студента в группу
 cursor.execute('UPDATE students SET group_id = %s WHERE id = %s', (groups_id, student_id))
-cursor.execute(f'SELECT * FROM students WHERE group_id = {groups_id}')
+cursor.execute(f"SELECT * FROM students WHERE group_id = {groups_id}")
 student_in_group_data = cursor.fetchone()
-print(f'Определение студента в группу:\n{student_in_group_data}\n')
+print(f"Определение студента в группу:\n{student_in_group_data}\n")
 
 
 # Создание предметов
@@ -65,7 +65,7 @@ for title in titles:
 select_query = f"SELECT * FROM subjets WHERE id IN ({','.join(['%s'] * len(subject_ids))})"
 cursor.execute(select_query, tuple(subject_ids))
 subjets_data = cursor.fetchall()
-print(f'Создание предметов:\n{subjets_data}\n')
+print(f"Создание предметов:\n{subjets_data}\n")
 
 
 # Создание занятий
@@ -84,12 +84,12 @@ cursor.executemany(
     ]
 )
 
-select_lessons = f'SELECT * FROM lessons WHERE subject_id IN ({','.join(['%s'] * len(subject_ids))})'
+select_lessons = f"SELECT * FROM lessons WHERE subject_id IN ({','.join(['%s'] * len(subject_ids))})"
 cursor.execute(select_lessons, tuple(subject_ids))
 lessons_data = cursor.fetchall()
 for lesson in lessons_data:
     lessons_ids.append(lesson[0])
-print(f'Создание занятий:\n{lessons_data}\n')
+print(f"Создание занятий:\n{lessons_data}\n")
 
 
 # Проставить оценки
@@ -106,10 +106,10 @@ cursor.executemany(
     ]
 )
 
-select_marks = f'SELECT * FROM marks WHERE lesson_id IN ({','.join(['%s'] * len(lessons_ids))})'
+select_marks = f"SELECT * FROM marks WHERE lesson_id IN ({','.join(['%s'] * len(lessons_ids))})"
 cursor.execute(select_marks, tuple(lessons_ids))
 marks_data = cursor.fetchall()
-print(f'Проставить оценки:\n{marks_data}\n')
+print(f"Проставить оценки:\n{marks_data}\n")
 
 
 # Получить все оценки студента
@@ -121,7 +121,7 @@ WHERE s.id = %s
 '''
 cursor.execute(select_all_marks, (student_id,))
 marks_all_data = cursor.fetchall()
-print(f'Получить все оценки студента:\n{marks_all_data}\n')
+print(f"Получить все оценки студента:\n{marks_all_data}\n")
 
 
 # Получить все книги студента
@@ -133,7 +133,7 @@ WHERE s.id = %s
 '''
 cursor.execute(select_all_books, (student_id,))
 books_all_data = cursor.fetchall()
-print(f'Получить все книги студента:\n{books_all_data}\n')
+print(f"Получить все книги студента:\n{books_all_data}\n")
 
 
 # Получить всю информацию о студенте
@@ -149,7 +149,7 @@ WHERE s.id = %s
 '''
 cursor.execute(all_information_student, (student_id,))
 all_information_student_data = cursor.fetchall()
-print(f'Получить всю информацию о студенте:\n{all_information_student_data}\n')
+print(f"Получить всю информацию о студенте:\n{all_information_student_data}\n")
 
 db.commit()
 db.close()
