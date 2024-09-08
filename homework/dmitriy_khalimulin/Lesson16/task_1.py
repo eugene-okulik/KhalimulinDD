@@ -5,6 +5,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
+
 # Подключение к базе данных
 db = mysql.connect(
     user=os.getenv('DB_USER'),
@@ -16,9 +17,11 @@ db = mysql.connect(
 
 cursor = db.cursor()
 
+
 # Путь к файлу для чтения
 base_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 eugene_file_path_csv = os.path.join(base_path, 'eugene_okulik', 'Lesson_16', 'hw_data', 'data.csv')
+
 
 # Чтение данных из файла CSV
 with open(eugene_file_path_csv, newline='') as csv_file:
@@ -35,13 +38,13 @@ with open(eugene_file_path_csv, newline='') as csv_file:
         query = '''
         SELECT COUNT(*) FROM students s
         LEFT JOIN `groups` g ON s.group_id = g.id
-        LEFT JOIN books b ON s.id = b.taken_by_student_id 
-        LEFT JOIN marks m ON s.id = m.student_id 
-        LEFT JOIN lessons l ON m.lesson_id = l.id 
-        LEFT JOIN subjets s2 ON l.subject_id = s2.id 
-        WHERE s.name = %s AND s.second_name = %s 
-        AND g.title = %s AND b.title = %s 
-        AND s2.title = %s AND l.title = %s 
+        LEFT JOIN books b ON s.id = b.taken_by_student_id
+        LEFT JOIN marks m ON s.id = m.student_id
+        LEFT JOIN lessons l ON m.lesson_id = l.id
+        LEFT JOIN subjets s2 ON l.subject_id = s2.id
+        WHERE s.name = %s AND s.second_name = %s
+        AND g.title = %s AND b.title = %s
+        AND s2.title = %s AND l.title = %s
         AND m.value = %s
         '''
 
@@ -61,5 +64,6 @@ with open(eugene_file_path_csv, newline='') as csv_file:
             print(missing_row)
     else:
         print("Все данные из CSV файла найдены в базе данных.")
+
 
 db.close()
