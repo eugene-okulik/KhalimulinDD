@@ -45,7 +45,9 @@ with open(eugene_file_path_csv, newline='') as csv_file:
         AND m.value = %s
         '''
 
-        cursor.execute(query, (name, second_name, group_title, book_title, subject_title, lesson_title, mark_value))
+        cursor.execute(
+            query, (name, second_name, group_title, book_title, subject_title, lesson_title, mark_value)
+        )
         result = cursor.fetchone()
 
         # Если записи нет, добавляем строку в список отсутствующих данных
