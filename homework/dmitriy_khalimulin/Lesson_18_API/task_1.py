@@ -1,7 +1,7 @@
 import requests
 
 
-# Создание обьекта
+# Создание объекта
 def create_object():
     body = {
         "name": "Honor 10",
@@ -18,17 +18,16 @@ def create_object():
         json=body,
         headers=headers
     )
-    print(response.json())
+    print(f"Создан объект: {response.json()}")
     assert response.status_code == 200, 'Status code is incorrect'
     assert response.json()['name'] == 'Honor 10'
-    object_id = response.json()['id']
-    return object_id
+    return response.json()['id']
 
 
 # ----------------------------------------------------------------------------------------------------
 
 
-# Изменение обьекта методом PUT
+# Изменение объекта методом PUT
 def update_object_put(object_id):
     body = {
         "name": "Honor 80",
@@ -45,17 +44,15 @@ def update_object_put(object_id):
         json=body,
         headers=headers
     )
-    print(response.json())
+    print(f"Обновлен объект (PUT): {response.json()}")
     assert response.status_code == 200, 'Status code is incorrect'
     assert response.json()['name'] == 'Honor 80'
-    update_object_put_id = response.json()['id']
-    return update_object_put_id
 
 
 # ----------------------------------------------------------------------------------------------------
 
 
-# Изменение обьекта методом PATCH
+# Изменение объекта методом PATCH
 def update_object_patch(object_id):
     body = {
         "name": "Iphone"
@@ -66,34 +63,43 @@ def update_object_patch(object_id):
         json=body,
         headers=headers
     )
-    print(response.json())
+    print(f"Обновлен объект (PATCH): {response.json()}")
     assert response.status_code == 200, 'Status code is incorrect'
     assert response.json()['name'] == 'Iphone'
-    update_object_patch_id = response.json()['id']
-    return update_object_patch_id
 
 
 # ----------------------------------------------------------------------------------------------------
 
 
-# Удаление обьекта №4
+# Удаление объекта
 def clear_object(object_id):
     delete_response = requests.delete(f'https://api.restful-api.dev/objects/{object_id}')
+    print(f"Удален объект: {delete_response.json()}")
     assert delete_response.status_code == 200, 'Status code is incorrect'
     assert delete_response.json()['message'] == f'Object with id = {object_id} has been deleted.'
-    print(delete_response.json())
 
 
-# Основная логика
+# ----------------------------------------------------------------------------------------------------
 
-# Создание объекта
-created_object_id = create_object()
 
-# Изменение объекта с помощью PUT
-updated_object_put_id = update_object_put(created_object_id)
+def main():
+    # Создание и удаление объекта
+    object_id = create_object()
+    clear_object(object_id)
 
-# Изменение объекта с помощью PATCH
-updated_object_patch_id = update_object_patch(updated_object_put_id)
+    # Создание, изменение (PUT) и удаление объекта
+    object_id = create_object()
+    update_object_put(object_id)
+    clear_object(object_id)
 
-# Удаление объекта
-clear_object(updated_object_patch_id)
+    # Создание, изменение (PATCH) и удаление объекта
+    object_id = create_object()
+    update_object_patch(object_id)
+    clear_object(object_id)
+
+    # Просто создание и удаление объекта
+    object_id = create_object()
+    clear_object(object_id)
+
+
+main()
