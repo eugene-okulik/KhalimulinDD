@@ -75,12 +75,12 @@ lessons_ids = []
 
 cursor.executemany(
     lessons_create, [
-        ('Lesson_1', subject_ids[0]),
-        ('Lesson_2', subject_ids[0]),
-        ('Lesson_3', subject_ids[1]),
-        ('Lesson_4', subject_ids[1]),
-        ('Lesson_5', subject_ids[2]),
-        ('Lesson_6', subject_ids[2]),
+        ('Lesson1', subject_ids[0]),
+        ('Lesson2', subject_ids[0]),
+        ('Lesson3', subject_ids[1]),
+        ('Lesson4', subject_ids[1]),
+        ('Lesson5', subject_ids[2]),
+        ('Lesson6', subject_ids[2]),
     ]
 )
 

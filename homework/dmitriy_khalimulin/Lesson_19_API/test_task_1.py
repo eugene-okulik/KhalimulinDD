@@ -5,7 +5,7 @@ import pytest
 # Фикстура для всей сессии
 @pytest.fixture(scope='session')
 def session_1():
-    print('Start testing')
+    print('\nStart testing')
     yield
     print('Testing completed')
 
@@ -20,9 +20,38 @@ def fun_1():
 
 # Фикстура для создания и удаления объекта
 @pytest.fixture()
-def create_deleted(request):
-    request.getfixturevalue('fun_1')   # Используем фикстуру fun_1 внутри данной фикстуры
-    name = request.param  # Используем параметр, переданный через параметризацию
+def create_deleted():
+    body = {
+        "name": "Samsung",
+        "data": {
+            "year": 2024,
+            "price": 4424.99,
+            "CPU model": "Intel Core i9",
+            "Hard disk size": "1 TB"
+        }
+    }
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(
+        'https://api.restful-api.dev/objects',
+        json=body,
+        headers=headers
+    )
+    post_id = response.json()['id']
+
+    print(f"\nСоздан объект с ID: {post_id}")
+
+    yield post_id
+
+    # Удаляем объект после завершения теста
+    print(f"\nУдаление объекта с ID: {post_id}")
+    requests.delete(f'https://api.restful-api.dev/objects/{post_id}')
+
+
+# ----------------------------------------------------------------------------------------------------
+
+# Создание объекта трех обьектов
+@pytest.mark.parametrize('name', ['Iphone', 'Honor 51', 'Samsung'])
+def test_creating_three(name, session_1, fun_1):
     body = {
         "name": name,
         "data": {
@@ -39,28 +68,18 @@ def create_deleted(request):
         headers=headers
     )
     post_id = response.json()['id']
+    assert response.status_code == 200, 'Status code is incorrect'
+    assert response.json()['name'] == name
+    print(f"\nСоздание объекта с ID: {post_id}")
 
-    print(f"\nСоздан объект с именем '{name}' и ID: {post_id}")
-
-    yield post_id
-
-    # Удаляем объект после завершения теста
+    # Удаляем объекты после завершения теста
     print(f"\nУдаление объекта с ID: {post_id}")
     requests.delete(f'https://api.restful-api.dev/objects/{post_id}')
 
 
 # ----------------------------------------------------------------------------------------------------
 
-# Создание объекта (Объект создается через фикстуру create_deleted)
-@pytest.mark.parametrize('create_deleted', ['Iphone', 'Honor 51', 'Samsung'], indirect=True)
-def test_create_object(create_deleted, session_1, fun_1):
-    assert create_deleted is not None, "Объект не был создан"
-
-
-# ----------------------------------------------------------------------------------------------------
-
 # Изменение объекта методом PUT
-@pytest.mark.parametrize('create_deleted', ['Iphone'], indirect=True)
 @pytest.mark.medium
 def test_update_object_put(create_deleted, fun_1):
     body = {
@@ -86,7 +105,6 @@ def test_update_object_put(create_deleted, fun_1):
 # ----------------------------------------------------------------------------------------------------
 
 # Изменение объекта методом PATCH
-@pytest.mark.parametrize('create_deleted', ['Samsung'], indirect=True)
 @pytest.mark.critical
 def test_update_object_patch(create_deleted, fun_1):
     body = {
@@ -104,10 +122,32 @@ def test_update_object_patch(create_deleted, fun_1):
 
 
 # ----------------------------------------------------------------------------------------------------
+# Фикстура создания обьекта для удаления
+@pytest.fixture()
+def creating_post_delete():
+    body = {
+        "name": "Oppo",
+        "data": {
+            "year": 2024,
+            "price": 4424.99,
+            "CPU model": "Intel Core i9",
+            "Hard disk size": "1 TB"
+        }
+    }
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(
+        'https://api.restful-api.dev/objects',
+        json=body,
+        headers=headers
+    )
+    post_delete_id = response.json()['id']
+    print(f"\nСоздание объекта с ID: {post_delete_id}")
+    return post_delete_id
 
-# Удаление объекта
-@pytest.mark.parametrize('create_deleted', ['Iphone'], indirect=True)
-def test_delete_object(create_deleted, fun_1):
-    delete_response = requests.delete(f'https://api.restful-api.dev/objects/{create_deleted}')
+
+# Удаление объекта после создания
+def test_delete_object(creating_post_delete, fun_1):
+    delete_response = requests.delete(f'https://api.restful-api.dev/objects/{creating_post_delete}')
     assert delete_response.status_code == 200, 'Status code is incorrect'
-    assert delete_response.json()['message'] == f'Object with id = {create_deleted} has been deleted.'
+    assert delete_response.json()['message'] == f'Object with id = {creating_post_delete} has been deleted.'
+    print(f"\nУдаление объекта с ID: {creating_post_delete}")
