@@ -71,7 +71,7 @@ def test_update_object_put(create_deleted, fun_1):
     print(f"Обновлен объект (PUT): {response.json()}")
     with allure.step('Response code 200 received'):
         assert response.status_code == 200
-    with allure.step(f'The response body contains a name Honor 80'):
+    with allure.step('The response body contains a name Honor 80'):
         assert response.json()['name'] == 'Honor 80'
 
 
@@ -99,7 +99,7 @@ def test_update_object_patch(create_deleted, fun_1):
     print(f"Обновлен объект (PATCH): {response.json()}")
     with allure.step('Response code 200 received'):
         assert response.status_code == 200
-    with allure.step(f'The response body contains a name Iphone'):
+    with allure.step('The response body contains a name Iphone'):
         assert response.json()['name'] == 'Iphone'
 
 
