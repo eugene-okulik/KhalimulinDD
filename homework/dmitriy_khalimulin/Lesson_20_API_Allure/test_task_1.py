@@ -42,6 +42,7 @@ def test_creating_three(name, session_1, fun_1):
 
 # ----------------------------------------------------------------------------------------------------
 
+
 # Изменение объекта методом PUT
 @allure.feature('Change post by method PUT')
 @allure.story('Implementation of posts')
@@ -69,7 +70,7 @@ def test_update_object_put(create_deleted, fun_1):
         )
     print(f"Обновлен объект (PUT): {response.json()}")
     with allure.step('Response code 200 received'):
-        assert response.status_code == 200, 'Status code is incorrect'
+        assert response.status_code == 200
     with allure.step(f'The response body contains a name Honor 80'):
         assert response.json()['name'] == 'Honor 80'
 
@@ -97,7 +98,7 @@ def test_update_object_patch(create_deleted, fun_1):
         )
     print(f"Обновлен объект (PATCH): {response.json()}")
     with allure.step('Response code 200 received'):
-        assert response.status_code == 200, 'Status code is incorrect'
+        assert response.status_code == 200
     with allure.step(f'The response body contains a name Iphone'):
         assert response.json()['name'] == 'Iphone'
 
