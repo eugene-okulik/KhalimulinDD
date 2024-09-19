@@ -11,7 +11,6 @@ class DeletePost(Endpoint):
         self.response = requests.delete(f"{self.url}/{created_post_id}")
         self.json = self.response.json()
         self.message = self.json.get('message')
-        print(self.response.json())
         return self.response
 
     @allure.step('Check that in massage delete post_id')

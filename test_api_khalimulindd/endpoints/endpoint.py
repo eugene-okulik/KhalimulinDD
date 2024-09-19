@@ -1,4 +1,8 @@
 import allure
+import random
+from faker import Faker
+
+fake = Faker()
 
 
 class Endpoint:
@@ -14,3 +18,28 @@ class Endpoint:
     @allure.step('Check that response is 200')
     def check_that_status_is_200(self):
         assert self.response.status_code == 200, f'In response status {self.response.status_code}'
+
+    @staticmethod
+    def generate_random_data_body():
+        """Генерация случайных данных для обновления поста"""
+        return {
+            "name": fake.company(),  # Случайное имя для обновленного поста
+            "data": {
+                "year": random.randint(2000, 2030),
+                "price": round(random.uniform(500.0, 5000.0), 2),
+                "CPU model": random.choice(["Intel Core i9", "AMD Ryzen 9", "Intel Core i7", "Apple M1"]),
+                "Hard disk size": random.choice(["1 TB", "500 GB", "2 TB"])
+            }
+        }
+
+    @staticmethod
+    def generate_random_base_data_body():
+        """Генерация случайных данных для создания поста (без имени)"""
+        return {
+            "data": {
+                "year": random.randint(2000, 2030),
+                "price": round(random.uniform(500.0, 5000.0), 2),
+                "CPU model": random.choice(["Intel Core i9", "AMD Ryzen 9", "Intel Core i7", "Apple M1"]),
+                "Hard disk size": random.choice(["1 TB", "500 GB", "2 TB"])
+            }
+        }

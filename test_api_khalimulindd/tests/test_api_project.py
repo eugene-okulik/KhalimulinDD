@@ -1,28 +1,19 @@
 import pytest
 import allure
-
-CREATE_DATA_BODY_POSTS = {
-    "data": {
-        "year": 2024,
-        "price": 4424.99,
-        "CPU model": "Intel Core i9",
-        "Hard disk size": "1 TB"
-    }
-}
-
-
-NAMES = ["Huawei", "Samsung", "Apple"]
+from endpoints import create_post
+from endpoints import update_post_put
+from endpoints import update_post_patch
 
 
 # Тест для создания трех постов и их удаление
 @allure.feature('Create posts')
 @allure.story('Implementation of posts')
-@allure.title('Создание поста (POST)')
+@allure.title('Создание поста c параметризацией')
 @allure.description(f'Данный тест выполняет создание поста с параметризацией и постусловием')
-@pytest.mark.parametrize('name', NAMES)
+@pytest.mark.parametrize('name', create_post.CreatePost.generate_random_names())
 def test_create_posts(create_post_endpoint, delete_post_endpoint, name):
     # Создаем копию словаря из списка
-    body = CREATE_DATA_BODY_POSTS.copy()
+    body = create_post.CreatePost.generate_random_base_data_body()
     body["name"] = name
 
     # Создание поста
@@ -37,30 +28,16 @@ def test_create_posts(create_post_endpoint, delete_post_endpoint, name):
 
     # Удаление поста
     delete_post_endpoint.delete_post(created_post_id)
-    delete_post_endpoint.check_that_status_is_200()
-    delete_post_endpoint.check_that_post_id_in_massage(created_post_id)
 
 
 # Тест для создания одного поста с фиксированным именем
-
-CREATE_DATA_BODY_POST = {
-    "name": "Motorolla",
-    "data": {
-        "year": 4343,
-        "price": 4314.99,
-        "CPU model": "Intel Core i9",
-        "Hard disk size": "1 TB"
-    }
-}
-
-
 @allure.feature('Create posts')
 @allure.story('Implementation of posts')
 @allure.title('Создание одного поста (POST)')
 @allure.description('Данный тест выполняет создание одного поста и его удаление')
 def test_create_single_post(create_post_endpoint, delete_post_endpoint):
     # Создание поста
-    create_post_endpoint.create_new_post(payload=CREATE_DATA_BODY_POST)
+    create_post_endpoint.create_new_post()
     name = create_post_endpoint.response.json()["name"]
 
     # Проверка созданного поста
@@ -72,43 +49,92 @@ def test_create_single_post(create_post_endpoint, delete_post_endpoint):
 
     # Удаление поста
     delete_post_endpoint.delete_post(created_post_id)
-    delete_post_endpoint.check_that_status_is_200()
-    delete_post_endpoint.check_that_post_id_in_massage(created_post_id)
 
 
 # Тест для изменения поста методом PUT
 
-UPDATE_DATA_BODY = {
-    "name": "Oppo",
-    "data": {
-        "year": 3232,
-        "price": 1111.99,
-        "CPU model": "Intel Core i9",
-        "Hard disk size": "1 TB"
-    }
-}
+'''Генерируем тело ответа через функцию родительского файла и заносим в переменную'''
+UPDATE_DATA_BODY = update_post_put.UpdatePostPut.generate_random_data_body()
 
 
-def test_update_post(create_post_endpoint, delete_post_endpoint, update_post_endpoint):
-
+@allure.feature('Update posts')
+@allure.story('Implementation of posts')
+@allure.title('Изменение поста (PUT)')
+@allure.description('Данный тест выполняет предварительно создание поста, изменение поста и его удаление')
+def test_update_post_put(create_post_endpoint, delete_post_endpoint, update_post_put_endpoint):
     # Создание поста
-    create_post_endpoint.create_new_post(payload=CREATE_DATA_BODY_POST)
+    create_post_endpoint.create_new_post()
+
+    # Проверка успешного создания поста
+    create_post_endpoint.check_that_status_is_200()
 
     # Получение ID созданного поста
     created_new_post_id = create_post_endpoint.post_id
 
     # Изменение поста
-    update_post_endpoint.update_post(created_new_post_id, payload=UPDATE_DATA_BODY)
-    updated_name = update_post_endpoint.response.json()["name"]
+    update_post_put_endpoint.update_post(created_new_post_id, payload=UPDATE_DATA_BODY)
 
-    # Проверка измененного поста
-    update_post_endpoint.check_that_status_is_200()
-    update_post_endpoint.check_response_name_is_correct(updated_name)
+    # Получение имени из обновленного поста
+    updated_name = update_post_put_endpoint.response.json()["name"]
 
-    # Получение ID измененного поста
-    update_post_id = update_post_endpoint.update_post_id
+    # Проверка корректности имени после обновления
+    update_post_put_endpoint.check_that_status_is_200()
+    update_post_put_endpoint.check_response_name_is_correct(updated_name)
 
     # Удаление измененного поста
-    update_post_endpoint.update_post(update_post_id)
-    update_post_endpoint.check_that_status_is_200()
-    update_post_endpoint.check_that_post_id_in_massage(update_post_id)
+    delete_post_endpoint.delete_post(created_new_post_id)
+
+
+# Тест для изменения поста методом PATCH
+@allure.feature('Update posts')
+@allure.story('Implementation of posts')
+@allure.title('Изменение поста (PATCH)')
+@allure.description('Данный тест выполняет предварительно создание поста, частичное изменение поста и его удаление')
+def test_update_post_patch(create_post_endpoint, delete_post_endpoint, update_post_patch_endpoint):
+
+    body = update_post_patch.UpdatePostPatch.generate_random_base_data_body()
+
+    # Создание поста
+    create_post_endpoint.create_new_post()
+
+    # Проверка успешного создания поста
+    create_post_endpoint.check_that_status_is_200()
+
+    # Получение ID созданного поста
+    created_new_post_id = create_post_endpoint.post_id
+
+    # Изменение поста
+    update_post_patch_endpoint.update_post_patch(created_new_post_id, payload=body)
+
+    # Получение имени из обновленного поста
+    updated_name = update_post_patch_endpoint.response.json()["name"]
+
+    # Проверка корректности имени после обновления
+    update_post_patch_endpoint.check_that_status_is_200()
+    update_post_patch_endpoint.check_response_name_is_correct(updated_name)
+
+    # Удаление измененного поста
+    delete_post_endpoint.delete_post(created_new_post_id)
+
+
+#  Тест для удаления поста
+@allure.feature('Delete posts')
+@allure.story('Implementation of posts')
+@allure.title('Удаление поста')
+@allure.description('Данный тест выполняет предварительно создание поста и его удаление')
+def test_delete_post(create_post_endpoint, delete_post_endpoint):
+    # Создание поста
+    create_post_endpoint.create_new_post()
+
+    # Проверка созданного поста
+    create_post_endpoint.check_that_status_is_200()
+
+    # Получение ID созданного поста
+    created_new_post_id = create_post_endpoint.post_id
+
+    # Удаление поста
+    delete_post_endpoint.delete_post(created_new_post_id)
+
+    # Проверка ответа
+    delete_post_endpoint.check_that_status_is_200()
+    delete_post_endpoint.check_that_post_id_in_massage(created_new_post_id)
