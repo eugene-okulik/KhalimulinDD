@@ -9,7 +9,7 @@ from endpoints import update_post_patch
 @allure.feature('Create posts')
 @allure.story('Implementation of posts')
 @allure.title('Создание поста c параметризацией')
-@allure.description(f'Данный тест выполняет создание поста с параметризацией и постусловием')
+@allure.description('Данный тест выполняет создание поста с параметризацией и постусловием')
 @pytest.mark.parametrize('name', create_post.CreatePost.generate_random_names())
 def test_create_posts(create_post_endpoint, delete_post_endpoint, name):
     # Создаем копию словаря из списка
