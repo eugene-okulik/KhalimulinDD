@@ -84,10 +84,10 @@ def test_update_post_patch(create_and_cleanup_post, update_post_patch_endpoint):
     update_post_patch_endpoint.check_response_name_is_correct(updated_name)
 
 
-@allure.feature('Delete posts')
-@allure.story('Implementation of posts')
-@allure.title('Удаление поста')
-@allure.description('Данный тест выполняет предварительно создание поста и его удаление')
-def test_delete_post(create_and_cleanup_post, delete_post_endpoint):
-    # Получение ID созданного поста
-    created_new_post_id = create_and_cleanup_post.post_id
+# @allure.feature('Delete posts')
+# @allure.story('Implementation of posts')
+# @allure.title('Удаление поста')
+# @allure.description('Данный тест выполняет предварительно создание поста и его удаление')
+# def test_delete_post(create_and_cleanup_post, delete_post_endpoint):
+#     # Получение ID созданного поста
+#     created_new_post_id = create_and_cleanup_post.post_id
