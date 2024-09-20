@@ -11,6 +11,7 @@ class UpdatePostPatch(Endpoint):
             json=payload,
             headers=headers
         )
+        print(self.response.json())
         self.json = self.response.json()
         self.update_post_id = self.json['id']
         return self.response

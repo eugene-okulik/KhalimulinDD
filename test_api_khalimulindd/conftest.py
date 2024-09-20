@@ -23,3 +23,25 @@ def update_post_patch_endpoint():
 @pytest.fixture()
 def delete_post_endpoint():
     return DeletePost()
+
+
+@pytest.fixture()
+def create_post(create_post_endpoint):
+    """Фикстура для создания поста с произвольным payload"""
+    def _create_post(payload=None):
+        create_post_endpoint.create_new_post(payload=payload)
+        return create_post_endpoint
+    return _create_post
+
+
+@pytest.fixture()
+def create_and_cleanup_post(create_post_endpoint, delete_post_endpoint):
+    """Создает пост и удаляет его после завершения теста."""
+    create_post_endpoint.create_new_post()
+    yield create_post_endpoint
+
+    # После завершения теста удаляем пост
+    created_post_id = create_post_endpoint.post_id
+    if created_post_id:
+        delete_response = delete_post_endpoint.delete_post(created_post_id)
+        create_post_endpoint.delete_response = delete_response
