@@ -1,63 +1,67 @@
 import pytest
-from endpoints.create_post import CreatePost
-from endpoints.update_post_put import UpdatePostPut
-from endpoints.update_post_patch import UpdatePostPatch
-from endpoints.delete_post import DeletePost
+from endpoints.create_object import CreateObject
+from endpoints.update_object_put import UpdateObjectPut
+from endpoints.update_object_patch import UpdateObjectPatch
+from endpoints.delete_object import DeleteObject
 
 
 @pytest.fixture()
-def create_post_endpoint():
-    return CreatePost()
+def create_object_endpoint():
+    return CreateObject()
 
 
 @pytest.fixture()
-def update_post_put_endpoint():
-    return UpdatePostPut()
+def update_object_put_endpoint():
+    return UpdateObjectPut()
 
 
 @pytest.fixture()
-def update_post_patch_endpoint():
-    return UpdatePostPatch()
+def update_object_patch_endpoint():
+    return UpdateObjectPatch()
 
 
 @pytest.fixture()
-def delete_post_endpoint():
-    return DeletePost()
+def delete_object_endpoint():
+    return DeleteObject()
 
 
 @pytest.fixture()
-def create_post(create_post_endpoint):
-    """Фикстура для создания поста с произвольным payload"""
-    def _create_post(payload=None):
-        create_post_endpoint.create_new_post(payload=payload)
-        return create_post_endpoint
-    return _create_post
+def create_object_fixture(create_object_endpoint):
+    """Фикстура для создания обьекта"""
+    def _create_object(payload=None):
+        create_object_endpoint.create_new_object(payload=payload)
+        created_object_id = create_object_endpoint.object_id
+        created_name = create_object_endpoint.object_name
+        return create_object_endpoint, created_object_id, created_name
+    return _create_object
 
 
 @pytest.fixture()
-def create_and_cleanup_post(create_post_endpoint, delete_post_endpoint):
-    """Создает пост и удаляет его после завершения теста."""
-    create_post_endpoint.create_new_post()
-    yield create_post_endpoint
-
-    # После завершения теста удаляем пост
-    created_post_id = create_post_endpoint.post_id
-    if created_post_id:
-        delete_response = delete_post_endpoint.delete_post(created_post_id)
-        create_post_endpoint.delete_response = delete_response
+def update_put_object_fixture(update_object_put_endpoint):
+    """Фикстура для изменения обьекта"""
+    def _update_object(payload=None):
+        update_object_put_endpoint.update_object_put(payload=payload)
+        update_object_id = update_object_put_endpoint.update_object_id
+        update_name = update_object_put_endpoint.update_object_name
+        return update_object_put_endpoint, update_object_id, update_name
+    return _update_object
 
 
 @pytest.fixture()
-def create_post_fixture(create_post_endpoint):
-    """Фикстура для создания поста"""
-    create_post_endpoint.create_new_post()
-    return create_post_endpoint
+def update_patch_object_fixture(update_object_patch_endpoint):
+    """Фикстура для частичного изменения обьекта"""
+    def _update_object(payload=None):
+        update_object_patch_endpoint.update_object_patch(payload=payload)
+        update_object_id = update_object_patch_endpoint.update_object_id
+        update_name = update_object_patch_endpoint.update_object_name
+        return update_object_patch_endpoint, update_object_id, update_name
+    return _update_object
 
 
 @pytest.fixture()
-def cleanup_post_fixture(delete_post_endpoint):
-    """Фикстура для удаления"""
-    def _cleanup_post(post_id):
-        if post_id:
-            delete_post_endpoint.delete_post(post_id)
-    return _cleanup_post
+def cleanup_object_fixture(delete_object_endpoint):
+    """Фикстура для удаления обьекта"""
+    def _cleanup_object(object_id):
+        if object_id:
+            delete_object_endpoint.delete_object(object_id)
+    return _cleanup_object

@@ -1,102 +1,118 @@
 import pytest
 import allure
-from endpoints import create_post
+from endpoints import create_object
+
+# Создание экземпляра класса CreateObject
+create_obj_instance = create_object.CreateObject()
+
+# Использование метода для генерации случайных данных
+DATA_BODY = create_obj_instance.generate_random_data_body()
+DATA_BODY_NO_NAME = create_obj_instance.generate_random_base_data_body()
+NAMES = create_obj_instance.generate_random_names()
 
 
-'''Генерируем тело ответа через функцию и заносим в переменную'''
-DATA_BODY = create_post.CreatePost.generate_random_data_body()
-DATA_BODY_NO_NAME = create_post.CreatePost.generate_random_base_data_body()
-NAMES = create_post.CreatePost.generate_random_names()
-
-
-# Тест для создания трех постов и их удаление
-@allure.feature('Create posts')
-@allure.story('Implementation of posts')
-@allure.title('Создание поста с параметризацией')
-@allure.description('Данный тест выполняет создание поста с параметризацией и постусловием')
+# Тест для создания трех обьектов
+@allure.feature('Create object')
+@allure.story('Implementation of objects')
+@allure.title('Создание обьекта с параметризацией')
+@allure.description('Данный тест выполняет создание обьекта с параметризацией и постусловием')
 @pytest.mark.parametrize('name', NAMES)
-def test_create_posts_with_param(create_and_cleanup_post, cleanup_post_fixture, name):
+def test_create_objects_with_param(create_object_fixture, cleanup_object_fixture, create_object_endpoint, name):
     # Генерация тела запроса с параметризированным именем
     body = DATA_BODY_NO_NAME
     body["name"] = name
 
-    # Создание поста
-    create_and_cleanup_post.create_new_post(payload=body)
+    # Создание обьекта и получение его ID
+    create_object_endpoint, created_object_id = create_object_fixture(payload=body)
 
-    # Проверка созданного поста
-    create_and_cleanup_post.check_that_status_is_200()
-    create_and_cleanup_post.check_response_name_is_correct(name)
+    # Проверка созданного обьекта
+    create_object_endpoint.check_that_status_is_200()
+    create_object_endpoint.check_response_name_is_correct(name)
 
-
-# Тест для создания одного поста с фиксированным именем
-@allure.feature('Create posts')
-@allure.story('Implementation of posts')
-@allure.title('Создание одного поста (POST)')
-@allure.description('Данный тест выполняет проверку созданного поста')
-def test_create_single_post(create_and_cleanup_post, create_post_endpoint):
-
-    name = create_post_endpoint.response.json()["name"]
-
-    # Проверка созданного поста
-    create_post_endpoint.check_that_status_is_200()
-    create_post_endpoint.check_response_name_is_correct(name)
+    # Удаление обьекта после проверки
+    cleanup_object_fixture(object_id=created_object_id)
 
 
-# Тест для изменения поста методом PUT
-@allure.feature('Update posts')
-@allure.story('Implementation of posts')
-@allure.title('Изменение поста (PUT)')
-@allure.description('Данный тест выполняет предварительно создание поста, изменение поста и его удаление')
-def test_update_post_put(create_and_cleanup_post, update_post_put_endpoint):
+# Тест для создания одного обьекта с фиксированным именем
+@allure.feature('Create object')
+@allure.story('Implementation of objects')
+@allure.title('Создание одного обьекта (POST)')
+@allure.description('Данный тест выполняет проверку созданного обьекта')
+def test_create_single_object(create_object_fixture, cleanup_object_fixture, create_object_endpoint):
 
-    # Получение ID созданного поста
-    created_new_post_id = create_and_cleanup_post.post_id
+    # Создание обьекта и получение его ID
+    create_object_endpoint, created_object_id, created_name = create_object_fixture(payload=None)
 
-    # Изменение поста
-    update_post_put_endpoint.update_post(
-        created_new_post_id, payload=DATA_BODY
+    # Проверка созданного обьекта
+    create_object_endpoint.check_that_status_is_200()
+    create_object_endpoint.check_response_name_is_correct(created_name)
+
+    # Удаление обьекта после проверки
+    cleanup_object_fixture(object_id=created_object_id)
+
+
+# Тест для изменения обьекта методом PUT
+@allure.feature('Update object')
+@allure.story('Implementation of objects')
+@allure.title('Изменение обьекта (PUT)')
+@allure.description('Данный тест выполняет проверку изменение обьекта')
+def test_update_object_put(
+        create_object_fixture, cleanup_object_fixture, update_object_put_endpoint, update_put_object_fixture
+):
+
+    # Создание обьекта и получение его ID
+    create_object_endpoint, created_object_id = create_object_fixture(payload=None)
+
+    # Изменение обьекта
+    update_object_endpoint, update_object_id, update_object_name = update_put_object_fixture(
+        created_object_id, payload=None
     )
 
-    # Получение имени из обновленного поста
-    updated_name = update_post_put_endpoint.response.json()["name"]
+    # Проверка ответа после обновления
+    update_object_put_endpoint.check_that_status_is_200()
+    update_object_put_endpoint.check_response_name_is_correct(update_object_name)
 
-    # Проверка корректности имени после обновления
-    update_post_put_endpoint.check_that_status_is_200()
-    update_post_put_endpoint.check_response_name_is_correct(updated_name)
-
-
-# Тест для изменения поста методом PATCH
-@allure.feature('Update posts')
-@allure.story('Implementation of posts')
-@allure.title('Изменение поста (PATCH)')
-@allure.description('Данный тест выполняет предварительно создание поста, частичное изменение поста и его удаление')
-def test_update_post_patch(create_and_cleanup_post, update_post_patch_endpoint):
-
-    # Получение ID созданного поста
-    created_new_post_id = create_and_cleanup_post.post_id
-
-    # Частичное изменение поста
-    update_post_patch_endpoint.update_post_patch(created_new_post_id, payload=DATA_BODY_NO_NAME)
-
-    # Получение имени из обновленного поста
-    updated_name = update_post_patch_endpoint.response.json()["name"]
-
-    # Проверка корректности имени после обновления
-    update_post_patch_endpoint.check_that_status_is_200()
-    update_post_patch_endpoint.check_response_name_is_correct(updated_name)
+    # Удаление обновленного обьекта после проверки
+    cleanup_object_fixture(object_id=update_object_id)
 
 
-@allure.feature('Delete posts')
-@allure.story('Implementation of posts')
-@allure.title('Удаление поста')
-@allure.description('Данный тест выполняет предварительно создание поста и его удаление')
-def test_delete_post(create_post_fixture, cleanup_post_fixture, delete_post_endpoint):
-    # Получение ID созданного поста
-    created_new_post_id = create_post_fixture.post_id
+# Тест для изменения обьекта методом PATCH
+@allure.feature('Update object')
+@allure.story('Implementation of objects')
+@allure.title('Изменение обьекта (PATCH)')
+@allure.description('Данный тест выполняет частичное изменение поста')
+def test_update_object_patch(
+        create_object_fixture, cleanup_object_fixture, update_object_patch_endpoint, update_patch_object_fixture
+):
 
-    # Удаляем пост
-    cleanup_post_fixture(created_new_post_id)
+    # Создание обьекта и получение его ID
+    create_object_endpoint, created_object_id = create_object_fixture(payload=None)
 
-    # Проверяем, что пост был удалён
-    delete_post_endpoint.check_that_status_is_200()
-    delete_post_endpoint.check_that_post_id_in_massage(created_new_post_id)
+    # Изменение обьекта
+    update_object_endpoint, update_object_id, update_object_name = update_patch_object_fixture(
+        created_object_id, payload=None
+    )
+
+    # Проверка ответа после обновления
+    update_object_patch_endpoint.check_that_status_is_200()
+    update_object_patch_endpoint.check_response_name_is_correct(update_object_name)
+
+    # Удаление обновленного обьекта после проверки
+    cleanup_object_fixture(object_id=update_object_id)
+
+
+# Тест для удаление обьекта
+@allure.feature('Delete object')
+@allure.story('Implementation of objects')
+@allure.title('Удаление обьекта')
+@allure.description('Данный тест выполняет удаление обьекта')
+def test_delete_object(create_object_fixture, cleanup_object_fixture, delete_object_endpoint):
+    # Создание обьекта и получение его ID
+    created_object_id = create_object_fixture(payload=None)
+
+    # Удаляем обьект
+    cleanup_object_fixture(object_id=created_object_id)
+
+    # Проверяем, что обьект был удалён
+    delete_object_endpoint.check_that_status_is_200()
+    delete_object_endpoint.check_that_post_id_in_massage(created_object_id)

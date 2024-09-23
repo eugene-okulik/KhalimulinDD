@@ -21,7 +21,7 @@ class Endpoint:
 
     @staticmethod
     def generate_random_data_body():
-        """Генерация случайных данных для обновления поста"""
+        """Генерация случайных данных для обьекта"""
         return {
             "name": fake.company(),  # Случайное имя для обновленного поста
             "data": {
@@ -34,7 +34,7 @@ class Endpoint:
 
     @staticmethod
     def generate_random_base_data_body():
-        """Генерация случайных данных для создания поста (без имени)"""
+        """Генерация случайных данных для обьекта (без имени)"""
         return {
             "data": {
                 "year": random.randint(2000, 2030),
