@@ -1,67 +1,50 @@
 import pytest
-from endpoints.create_object import CreateObject
-from endpoints.update_object_put import UpdateObjectPut
-from endpoints.update_object_patch import UpdateObjectPatch
-from endpoints.delete_object import DeleteObject
+from endpoints.create_product import CreateProduct
+from endpoints.update_product_put import UpdateProductPut
+from endpoints.update_product_patch import UpdateProductPatch
+from endpoints.delete_product import DeleteProduct
 
 
 @pytest.fixture()
-def create_object_endpoint():
-    return CreateObject()
+def create_product_endpoint():
+    return CreateProduct()
 
 
 @pytest.fixture()
-def update_object_put_endpoint():
-    return UpdateObjectPut()
+def update_product_put_endpoint():
+    return UpdateProductPut()
 
 
 @pytest.fixture()
-def update_object_patch_endpoint():
-    return UpdateObjectPatch()
+def update_product_patch_endpoint():
+    return UpdateProductPatch()
 
 
 @pytest.fixture()
-def delete_object_endpoint():
-    return DeleteObject()
+def delete_product_endpoint():
+    return DeleteProduct()
 
 
 @pytest.fixture()
-def create_object_fixture(create_object_endpoint):
-    """Фикстура для создания обьекта"""
-    def _create_object(payload=None):
-        create_object_endpoint.create_new_object(payload=payload)
-        created_object_id = create_object_endpoint.object_id
-        created_name = create_object_endpoint.object_name
-        return create_object_endpoint, created_object_id, created_name
-    return _create_object
+def create_and_product_fixture(create_product_endpoint, delete_product_endpoint):
+    """Фикстура для создания и удаления продукта"""
+    create_product_endpoint.create_new_product()
+    created_product_id = create_product_endpoint.product_id
+    yield created_product_id
+    delete_product_endpoint.delete_product(created_product_id)
 
 
 @pytest.fixture()
-def update_put_object_fixture(update_object_put_endpoint):
-    """Фикстура для изменения обьекта"""
-    def _update_object(payload=None):
-        update_object_put_endpoint.update_object_put(payload=payload)
-        update_object_id = update_object_put_endpoint.update_object_id
-        update_name = update_object_put_endpoint.update_object_name
-        return update_object_put_endpoint, update_object_id, update_name
-    return _update_object
+def create_product_fixture(create_product_endpoint):
+    """Фикстура для создания продукта"""
+    created_product_id = create_product_endpoint.create_new_product()
+    yield created_product_id
 
 
 @pytest.fixture()
-def update_patch_object_fixture(update_object_patch_endpoint):
-    """Фикстура для частичного изменения обьекта"""
-    def _update_object(payload=None):
-        update_object_patch_endpoint.update_object_patch(payload=payload)
-        update_object_id = update_object_patch_endpoint.update_object_id
-        update_name = update_object_patch_endpoint.update_object_name
-        return update_object_patch_endpoint, update_object_id, update_name
-    return _update_object
-
-
-@pytest.fixture()
-def cleanup_object_fixture(delete_object_endpoint):
-    """Фикстура для удаления обьекта"""
-    def _cleanup_object(object_id):
-        if object_id:
-            delete_object_endpoint.delete_object(object_id)
-    return _cleanup_object
+def cleanup_product_fixture(request):
+    """Фикстура для удаления продукта после выполнения теста."""
+    yield
+    product_id = request.function.product_id
+    delete_product = DeleteProduct()
+    delete_product.delete_product(created_product_id=product_id)
