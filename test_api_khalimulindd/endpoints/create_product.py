@@ -10,9 +10,11 @@ fake = Faker()
 class CreateProduct(Endpoint):
     product_id = None
 
-    def create_new_product(self, headers=None):
+    def create_new_product(self, payload=None, headers=None):
 
-        payload = self.data_body()
+        # Если не передан payload, генерируем случайные данные.
+        if payload is None:
+            payload = self.data_body()
 
         self.response = requests.post(
             self.url,
@@ -25,7 +27,7 @@ class CreateProduct(Endpoint):
         return self.product_id
 
     @staticmethod
-    def generate_random_names(count=3):
+    def generate_random_title(count=3):
         """Генерация случайных названий"""
         return [fake.company() for _ in range(count)]
 

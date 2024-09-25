@@ -7,7 +7,7 @@ create_product_instance = create_product.CreateProduct()
 
 # Переменные для работы создания продуктов с параметризацией
 DATA_BODY_NO_NAME = create_product_instance.data_body_is_not_title()
-NAMES = create_product_instance.generate_random_names()
+TITLES = create_product_instance.generate_random_title()
 
 
 # Тест для создания трех продуктов
@@ -15,34 +15,14 @@ NAMES = create_product_instance.generate_random_names()
 @allure.story('Implementation of products')
 @allure.title('Создание продукта с параметризацией')
 @allure.description('Данный тест выполняет создание продукта с параметризацией')
-@pytest.mark.parametrize('name', NAMES)
-def test_create_product_with_param(create_product_endpoint, cleanup_product_fixture, request, name):
+@pytest.mark.parametrize('title', TITLES)
+def test_create_product_with_param(create_product_endpoint, cleanup_product_fixture, request, title):
     # Генерация тела запроса с параметризированным именем
     body = DATA_BODY_NO_NAME
-    body["name"] = name
+    body["title"] = title
 
     # Создание продукта
-    product_id = create_product_endpoint.create_new_product()
-
-    # Сохраняем product_id для последующей очистки
-    request.function.product_id = product_id
-
-    # Проверка созданного продукта
-    create_product_endpoint.check_that_status_is_200()
-
-
-# Тест для создания одного продукта с фиксированным именем
-@allure.feature('Create product')
-@allure.story('Implementation of products')
-@allure.title('Создание одного продукта (POST)')
-@allure.description('Данный тест выполняет проверку созданного продукта')
-def test_create_single_product(create_product_endpoint, cleanup_product_fixture, request):
-
-    # Создание продукта
-    product_id = create_product_endpoint.create_new_product()
-
-    # Сохраняем product_id для последующей очистки
-    request.function.product_id = product_id
+    request.function.product_id = create_product_endpoint.create_new_product(payload=body)
 
     # Проверка созданного продукта
     create_product_endpoint.check_that_status_is_200()
