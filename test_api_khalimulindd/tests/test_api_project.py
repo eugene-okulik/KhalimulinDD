@@ -1,9 +1,9 @@
 import pytest
 import allure
-from endpoints import create_product
+from endpoints.create_product import CreateProduct
 
 # Создание экземпляра класса CreateObject
-create_product_instance = create_product.CreateProduct()
+create_product_instance = CreateProduct()
 
 # Переменные для работы создания продуктов с параметризацией
 DATA_BODY_NO_NAME = create_product_instance.data_body_is_not_title()
