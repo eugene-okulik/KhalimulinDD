@@ -69,6 +69,9 @@ def test_filling_out_the_questionnaire(driver):
 
     # Выбор State из Dropdown
     dropdown_search_state = driver.find_element(By.XPATH, '//*[@id="state"]/child::div')
+
+    # Прокрутка до кнопки с помощью JavaScript
+    driver.execute_script("arguments[0].scrollIntoView();", dropdown_search_state)
     dropdown_search_state.click()
 
     dropdown_state = wait.until(
