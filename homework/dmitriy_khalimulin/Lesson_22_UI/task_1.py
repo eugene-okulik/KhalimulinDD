@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import pytest
 
 
@@ -16,7 +15,7 @@ def test_text_check(driver):
     driver.get('https://www.qa-practice.com/elements/input/simple')
     text_string = driver.find_element(By.ID, 'id_text_string')
     text_string.send_keys(input_data)
-    text_string.send_keys(Keys.ENTER)
+    text_string.submit()
     result_text = driver.find_element(By.ID, 'result-text')
     assert result_text.text == input_data
     print(result_text.text)
