@@ -35,7 +35,7 @@ def test_substitution_of_answer(page: Page):
     page.get_by_role("button", name="Take a closer look - iPhone 16 Pro & iPhone 16 Pro Max").click()
 
     # Поиск элемента подменного заголовка
-    samsung2 = page.locator('#rf-digitalmat-overlay-label-0', has_text=new_value_title)
+    title_is_popup = page.locator('#rf-digitalmat-overlay-label-0', has_text=new_value_title)
 
     # Проверка соответствия заголовка с подменным текстом
-    expect(samsung2).to_have_text(new_value_title)
+    expect(title_is_popup).to_have_text(new_value_title)
