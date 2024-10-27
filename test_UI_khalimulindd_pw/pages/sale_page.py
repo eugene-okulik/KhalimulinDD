@@ -1,37 +1,33 @@
 import allure
-from pages.base_page import BasePage
-from selenium.webdriver.common.keys import Keys
-from pages.locators import sale_page_locators as loc
-from selenium.webdriver.remote.webdriver import WebDriver
+from playwright.sync_api import Page, expect, BrowserContext
+from test_UI_khalimulindd_pw.pages.base_page import BasePage
+from test_UI_khalimulindd_pw.pages.locators import sale_page_locators as loc
 
 
 class SalePage(BasePage):
     page_url = '/sale.html'
 
-    def __init__(self, driver: WebDriver, timeout: int = 10):
-        super().__init__(driver, timeout)  # Наследование от родительского класса
-        self.text_link_pants = None
+    def __init__(self, page: Page, context: BrowserContext, timeout: int = 90000):
+        super().__init__(page, context, timeout)  # Наследование от родительского класса
+        self.text_link_pants_tab = None
+        self.link_pants = None
+        self.context = BrowserContext
 
     @allure.step('Adding an item to the cart and opening the cart')
     def adding_sixth_product_to_cart(self):
         self.find(loc.button_shop_women_deals_loc).click()
-
-        self.scroll(loc.sixth_product_loc)
 
         element_sixth_product = self.find(loc.sixth_product_loc)
         element_sixth_product_size = self.find(loc.sixth_product_size_loc)
         element_sixth_product_color = self.find(loc.sixth_product_color_loc)
         element_sixth_product_button = self.find(loc.sixth_product_button_loc)
 
-        self.actions.move_to_element(element_sixth_product)
-        self.actions.click(element_sixth_product_size)
-        self.actions.click(element_sixth_product_color)
-        self.actions.click(element_sixth_product_button)
-        self.actions.perform()
+        element_sixth_product.hover()
+        element_sixth_product_size.click()
+        element_sixth_product_color.click()
+        element_sixth_product_button.click()
 
-        self.scroll(loc.basket_loc)
-
-        self.wait_for_element_not_to_have_text_in_attribute(locator=loc.basket_loc, attribute='class', text='loading')
+        expect(self.page.locator(loc.basket_loc).nth(0)).not_to_have_attribute("class", "loading", timeout=10000)
         self.find(loc.button_basket_loc).click()
 
     # Свойство для получения элемента выбранного товара
@@ -59,18 +55,17 @@ class SalePage(BasePage):
         return 'You have no items in your shopping cart.'
 
     @allure.step('Opening the Pants link in a new tab and checking the text')
-    def open_link_pants_new_tab(self):
-        link_pants = self.find(loc.pants_link_loc)
-        self.text_link_pants = self.text_extraction(loc.pants_link_loc)
-        self.actions.key_down(Keys.CONTROL).click(link_pants).key_up(Keys.CONTROL).perform()
-        self.switch_to_new_tab()
-
-    # Свойство для передачи текста нажатой ссылки Pants
-    @property
-    def element_link_text_pants(self):
-        return self.text_link_pants
+    def open_link_pants_new_tab(self, context: BrowserContext):
+        self.link_pants = self.page.get_by_role("link", name="Pants").nth(1)
+        self.link_pants.click(modifiers=["Control"])
+        self.text_link_pants_tab = self.wait_for_new_page_and_get_element(context, locator=loc.pants_text_new_tab_loc)
 
     # Свойство для получения элемента текста Pants в новом окне
     @property
     def element_text_pants_new_tab(self):
-        return self.find(loc.pants_text_new_tab_loc)
+        return self.text_link_pants_tab
+
+    # Свойство для передачи текста нажатой ссылки Pants
+    @property
+    def element_link_text_pants(self):
+        return self.link_pants

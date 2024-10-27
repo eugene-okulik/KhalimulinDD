@@ -7,7 +7,7 @@ from test_UI_khalimulindd_pw.pages.locators import collections_eco_friendly_loca
 class CollectionsEcoFriendly(BasePage):
     page_url = '/collections/eco-friendly.html'
 
-    def __init__(self, page: Page, context: BrowserContext, timeout: int = 10):
+    def __init__(self, page: Page, context: BrowserContext, timeout: int = 90000):
         super().__init__(page, context, timeout)  # Наследование от родительского класса
         self.text_button_shorts_text = None
 
