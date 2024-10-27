@@ -63,9 +63,10 @@ class BasePage:
         # Обычный assert вместо expect для проверки сортировки списка
         assert prices == sorted(prices), f"Prices are not sorted: {prices}"
 
-    def wait_for_new_page_and_get_element(self, context: BrowserContext, locator: str):
+    @allure.step('Open and go to a new tab and return an element')
+    def wait_for_new_page_and_get_element(self, locator: str):
         """Ожидает открытия новой страницы и возвращает элемент по локатору."""
-        with context.expect_page() as new_page_event:
+        with self.context.expect_page() as new_page_event:
             new_page = new_page_event.value
 
         # Переключение на новую вкладку

@@ -49,13 +49,13 @@ def test_checking_if_the_cart_is_empty(sale_page):
     'Этот тест проверяет открытие ссылки Pants в новой вкладке, переход на новую вкладку и проверку текста'
 )
 @pytest.mark.regression
-def test_open_link_pants(sale_page, context):
+def test_open_link_pants(sale_page):
 
     # Открытие страницы в браузере
     sale_page.open_page()
 
     # Открытие ссылки в новой вкладке
-    sale_page.open_link_pants_new_tab(context)
+    sale_page.open_link_pants_new_tab()
 
     # Проверка соответствующего текста на новой вкладке
     sale_page.compare_element_texts(
