@@ -11,7 +11,6 @@ class SalePage(BasePage):
         super().__init__(page, context, timeout)  # Наследование от родительского класса
         self.text_link_pants_tab = None
         self.link_pants = None
-        self.context = BrowserContext
 
     @allure.step('Adding an item to the cart and opening the cart')
     def adding_sixth_product_to_cart(self):
@@ -55,10 +54,10 @@ class SalePage(BasePage):
         return 'You have no items in your shopping cart.'
 
     @allure.step('Opening the Pants link in a new tab and checking the text')
-    def open_link_pants_new_tab(self, context: BrowserContext):
+    def open_link_pants_new_tab(self):
         self.link_pants = self.page.get_by_role("link", name="Pants").nth(1)
         self.link_pants.click(modifiers=["Control"])
-        self.text_link_pants_tab = self.wait_for_new_page_and_get_element(context, locator=loc.pants_text_new_tab_loc)
+        self.text_link_pants_tab = self.wait_for_new_page_and_get_element(locator=loc.pants_text_new_tab_loc)
 
     # Свойство для получения элемента текста Pants в новом окне
     @property

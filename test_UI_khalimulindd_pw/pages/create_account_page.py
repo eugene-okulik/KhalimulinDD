@@ -60,8 +60,9 @@ class CreateAccount(BasePage):
         expect(error_element).to_have_text(error_message)
 
     @staticmethod
+    @allure.step('Field Fill Use Cases')
     def get_test_data_no_required_fields():
-        """Варианты заполнения полей"""
+        """Варианты использования заполнения полей"""
 
         message_error_field = 'This is a required field.'
 
