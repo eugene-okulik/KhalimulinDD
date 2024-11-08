@@ -66,7 +66,7 @@ class BasePage:
     @allure.step('Open and go to a new tab and return an element')
     def wait_for_new_page_and_get_element(self, locator: str):
         """Ожидает открытия новой страницы и возвращает элемент по локатору."""
-        with self.context.expect_page() as new_page_event:
+        with self.context.expect_page(timeout=self.timeout) as new_page_event:
             new_page = new_page_event.value
 
         # Переключение на новую вкладку
